@@ -1,63 +1,68 @@
 const express = require('express');
 const router = express.Router();
-const Libro = require('../models/Libro'); // Importa el modelo Libro
+const librosController = require('../controllers/librosController');
 
-// Obtener todos los libros
-router.get('/', async (req, res) => {
+// ✅ Ruta de prueba para verificar conexión a MongoDB Atlas
+router.get('/prueba-conexion', async (req, res) => {
     try {
-        const libros = await Libro.find();
-        res.json(libros);
+        res.status(200).json({ message: '✅ Conexión establecida correctamente con MongoDB Atlas' });
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        res.status(500).json({ message: '❌ Fallo de conexión con MongoDB' });
     }
 });
 
-// Obtener un libro por ISBN
-router.get('/:isbn', async (req, res) => {
-    try {
-        const libro = await Libro.findOne({ Isbn: req.params.isbn });
-        if (!libro) return res.status(404).json({ message: 'Libro no encontrado' });
-        res.json(libro);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
+ //✅ Obtener todos los libros
+router.get('/', librosController.getLibros);
 
-// Agregar un nuevo libro (MongoDB crea la base de datos automáticamente)
-router.post('/', async (req, res) => {
-    const libro = new Libro(req.body);
-    try {
-        const nuevoLibro = await libro.save(); // Guarda el libro en la BD
-        res.status(201).json(nuevoLibro);
-    } catch (err) {
-        res.status(400).json({ message: err.message });
-    }
-});
+// ✅ Buscar libros por nombre del autor
+router.get('/autor/:nombre', librosController.getLibrosPorAutor);
 
-// Actualizar un libro por ISBN
-router.put('/:isbn', async (req, res) => {
-    try {
-        const libroActualizado = await Libro.findOneAndUpdate(
-            { Isbn: req.params.isbn },
-            req.body,
-            { new: true }
-        );
-        if (!libroActualizado) return res.status(404).json({ message: 'Libro no encontrado' });
-        res.json(libroActualizado);
-    } catch (err) {
-        res.status(400).json({ message: err.message });
-    }
-});
+// ✅ Obtener un libro por ISBN
+router.get('/:isbn', librosController.getLibroPorISBN);
 
-// Eliminar un libro por ISBN
-router.delete('/:isbn', async (req, res) => {
-    try {
-        const libroEliminado = await Libro.findOneAndDelete({ Isbn: req.params.isbn });
-        if (!libroEliminado) return res.status(404).json({ message: 'Libro no encontrado' });
-        res.json({ message: 'Libro eliminado correctamente' });
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
+// ✅ Agregar un nuevo libro
+router.post('/', librosController.agregarLibro);
+
+// ✅ Actualizar un libro por ISBN
+router.put('/:isbn', librosController.actualizarLibro);
+
+// ✅ Eliminar un libro por ISBN
+router.delete('/:isbn', librosController.eliminarLibro);
 
 module.exports = router;
+
+// Agregamos una ruta GET /libros/prueba-conexion al principio para que puedas
+//  ir a http://localhost:3000/libros/prueba-conexion
+//  y saber si la conexión a MongoDB está funcionando.
+//Paso 4: Prueba en el navegador o Postman
+//  http://localhost:3000/libros/prueba-conexion
+//  Si ves el mensaje de conexión exitosa, ¡todo está bien!
+//Paso 5: Agregar las rutas restantes
+
+//Aseguramos que todas las rutas estén conectadas a tu controlador librosController.
+//  Las rutas son las siguientes:
+//  - GET /libros: Obtener todos los libros
+//  - GET /libros/autor/:nombre: Buscar libros por nombre del autor
+//  - GET /libros/:isbn: Obtener un libro por ISBN
+//  - POST /libros: Agregar un nuevo libro
+//  - PUT /libros/:isbn: Actualizar un libro por ISBN
+//  - DELETE /libros/:isbn: Eliminar un libro por ISBN
+//Paso 6: Probar las rutas
+//  Puedes usar Postman o tu navegador para probar las rutas GET.
+//  Para las rutas POST, PUT y DELETE, necesitarás usar Postman o una herramienta
+//  similar para enviar datos en el cuerpo de la solicitud.
+//  Asegúrate de que el servidor esté corriendo y prueba cada una de las rutas.
+//  Si todo está bien, deberías ver las respuestas esperadas en cada caso.
+//Paso 7: Manejo de errores
+//  Asegúrate de manejar errores en cada una de las funciones del controlador
+/*  Tu archivo librosRoutes.js está completo y correcto para manejar todas las operaciones necesarias desde el frontend:
+
+✅ Obtener todos los libros
+✅ Buscar libros por autor
+✅ Obtener un libro por ISBN
+✅ Agregar un nuevo libro
+✅ Actualizar un libro por ISBN
+✅ Eliminar un libro por ISBN
+✅ Ruta de prueba de conexión
+
+*/
